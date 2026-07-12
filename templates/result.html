@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Prediction Result</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='result.css') }}">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<header class="topbar glass">
+<a href="/" class="back">← Back to Home</a>
+<div class="brand">🌱 LeafNova AI</div>
+</header>
+
+<section class="hero">
+<h1>Prediction Result</h1>
+<div class="line"></div>
+<p>AI successfully analyzed your uploaded leaf.</p>
+</section>
+
+<div class="container">
+
+<section class="result-box glass">
+
+<div class="left">
+
+<h3>📷 Uploaded Leaf</h3>
+
+<img src="{{ imagepath }}" class="leaf-image" alt="Leaf">
+
+<div class="status">✅ Analysis Completed Successfully</div>
+
+</div>
+
+<div class="right">
+
+<div class="card">
+<h2>🌿 Disease Detected</h2>
+<p id="diseaseName">{{ name }}</p>
+</div>
+
+<div class="card">
+<h2>⚠ Cause</h2>
+<p id="diseaseCause">{{ cause }}</p>
+</div>
+
+<div class="card">
+<h2>💊 Cure / Treatment</h2>
+<p id="diseaseCure">{{ cure }}</p>
+</div>
+
+<div class="button-group">
+
+<button id="bnBtn" onclick="askAI('bn', this)">🔊 বাংলা</button>
+
+<button id="hiBtn" onclick="askAI('hi', this)">🔊 हिन्दी</button>
+</div>
+
+<div id="aiBox" class="card ai-box" style="display:none;"> 
+
+    <h2>🤖 AI Explanation</h2>
+
+    <p id="aiText"></p>
+
+</div>
+
+<div id="audioContainer" class="audio-container" style="display:none;">
+
+    <div class="audio-header">
+
+        <div class="audio-icon">🎧</div>
+
+        <div>
+            <h3>Voice Explanation</h3>
+            <p>Listen in your selected language</p>
+        </div>
+
+    </div>
+
+    <p id="audioStatus"></p>
+
+    <audio id="player" controls style="display:none;"></audio>
+
+</div>
+</section>
+
+<section class="weather glass">
+<div class="weather-left">
+
+<h2>🌦 Weather-Based Crop Advisory</h2>
+<p>Get weather-aware recommendations to improve disease treatment and crop protection.</p>
+
+<!-- <a href="/weather" class="btn">🌦 Get Weather Advisory →</a> -->
+<button id="weatherBtn"  onclick="getCurrentLocation()">
+    📍Detect My Location →
+</button>
+</div>
+
+<div class="weather-right">
+<div class="weather-grid">
+
+    <div class="weather-card">
+        <h4>📍 Location</h4>
+        <p id="city">--</p>
+    </div>
+    <div class="weather-card">
+        <h4>🌡 Temperature</h4>
+        <p id="temp">--°C</p>
+    </div>
+    <div class="weather-card">
+        <h4>💧 Humidity</h4>
+        <p id="humidity">--%</p>
+    </div>
+    <div class="weather-card">
+        <h4>🌧 Rain Chance</h4>
+        <p id="rain">--%</p>
+    </div>
+
+    <div class="weather-card">
+        <h4>💨 Wind</h4>
+        <p id="wind">-- km/h</p>
+    </div>
+
+</div>
+</div>
+</section>
+<!-- <div class="note">⚠ High humidity may increase disease spread. Follow the recommended treatment.</div>
+</div> -->
+<div class="note">
+
+    <h3>🤖 AI Weather Recommendation</h3>
+
+    <p id="weatherAdvice">
+
+        Click "Get Weather Advisory" to receive
+        personalized recommendations.
+
+    </p>
+
+</div>
+</section>
+
+
+
+<section class="glass upload">
+<div>
+<h3>Want to analyze another leaf?</h3>
+<p>Upload a new leaf image and get instant AI analysis.</p>
+</div>
+<a href="/#upload" class="btn">⬆ Upload New Leaf</a>
+</section>
+
+</div>
+
+<script src="{{ url_for('static', filename='result.js') }}"></script>
+</body>
+</html>

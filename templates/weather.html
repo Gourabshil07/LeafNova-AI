@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Weather Dashboard</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='weather.css') }}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<header class="navbar">
+<div class="brand">
+<div class="logo">🌿</div>
+<div>
+<h2>LeafNova AI</h2>
+<p>AI Powered Agriculture</p>
+</div>
+</div>
+
+<nav>
+<a href="/">Home</a>
+<a class="active" href="/weather">Weather</a>
+<a href="/about">About</a>
+</nav>
+
+<div class="date-box">
+☀️ <span>Weather Dashboard</span>
+</div>
+</header>
+
+
+<section class="search-section">
+    
+    <div class="search-box">
+        <input 
+            type="text"
+            id="cityInput"
+            placeholder="Search city"
+        >
+        <button id="searchBtn">
+            🔍 Search
+        </button>
+    </div>
+
+    <button id="locationBtn" >
+        📍 Detect My Location
+    </button>
+</section>
+
+<main class="dashboard">
+
+<section class="hero-card">
+    <div class="weather-image">
+    <div class="overlay">
+    <h1 id="temperature">0°C</h1>
+    <h3 id="weatherCondition">Loading...</h3>
+    <div class="pill" id="aqi">AQI • Loading...</div>
+    </div>
+    </div>
+
+    <div class="details">
+    <h3 id="cityName">📍 Loading...</h3>
+    <ul>
+    <li id="sunrise">🌅Sunrise : </li>
+    <li id="sunset">🌇 Sunset : </li>
+    <li id="humidity">💧 Humidity :</li>
+    <li id="wind">🌬 Wind : </li>
+    <!-- <li id="uvIndex">☀ UV Index : </li> -->
+    <li id="visibility">👁 Visibility : </li>
+    </ul>
+    </div>
+</section>
+
+<!-- <section class="stats"> -->
+<div class="stats-wrapper">  
+    <div class="stat"><h4>🌡 Temperature</h4><h2 id="tempCard">0°C</h2></div>
+    <div class="stat"><h4>💧 Humidity</h4><h2 id="humidityCard">0%</h2></div>
+    <div class="stat"><h4>🌧 Rain Chance</h4><h2 id="rainCard">0%</h2></div>
+    <div class="stat"><h4>💨 Wind</h4><h2 id="windCard">0 km/h</h2></div>
+</div>    
+<!-- </section> -->
+
+<section class="grid">
+
+
+<div class="panel">
+
+    <h3>🤖 AI Farming Advisory</h3>
+
+    <ul id="advisoryList">
+
+        <li>Loading advice...</li>
+
+    </ul>
+
+</div>
+
+
+<div class="panel">
+
+    <h3>🦠 Disease Risk</h3>
+
+    <div class="risk" id="riskLevel">
+        Loading...
+    </div>
+
+    <p id="riskText">
+        Loading...
+    </p>
+
+</div>
+
+
+<div class="panel wide">
+    <h3>📅 5-Day Forecast</h3>
+
+    <div class="forecast">
+
+        <div class="day">
+            <span id="day1">Tue</span><br>
+            <span id="icon1">☀️</span><br>
+            <span id="temp1">0°</span>
+        </div>
+
+        <div class="day">
+            <span id="day2">Wed</span><br>
+            <span id="icon2">🌧</span><br>
+            <span id="temp2">0°</span>
+        </div>
+
+        <div class="day">
+            <span id="day3">Thu</span><br>
+            <span id="icon3">⛅</span><br>
+            <span id="temp3">0°</span>
+        </div>
+
+        <div class="day">
+            <span id="day4">Fri</span><br>
+            <span id="icon4">☀️</span><br>
+            <span id="temp4">0°</span>
+        </div>
+
+        <div class="day">
+            <span id="day5">Sat</span><br>
+            <span id="icon5">🌦</span><br>
+            <span id="temp5">0°</span>
+        </div>
+
+        <div class="day">
+            <span id="day6">Sun</span><br>
+            <span id="icon6">☀️</span><br>
+            <span id="temp6">0°</span>
+        </div>
+
+        <div class="day">
+            <span id="day7">Mon</span><br>
+            <span id="icon7">🌤</span><br>
+            <span id="temp7">0°</span>
+        </div>
+
+    </div>
+</div>
+
+
+
+<div class="panel">
+
+    <h3>⚠ Weather Alerts</h3>
+
+    <div id="weatherAlerts">
+
+        <p>Loading...</p>
+
+    </div>
+
+</div>
+
+</section>
+
+</main>
+
+<footer>
+ <p>
+    Stay updated with accurate weather insights and AI-powered farming advice.
+ </p>
+</footer>
+
+
+<script src="{{ url_for('static', filename='weather.js') }}"></script>
+</body>
+</html>

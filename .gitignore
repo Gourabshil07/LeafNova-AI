@@ -1,0 +1,45 @@
+
+# Environment Variables
+
+.env
+.env.*
+
+
+# TensorFlow Model
+
+models/
+*.keras
+
+
+# Uploaded Images
+
+uploadimages/temp_*
+uploadimages/*.mp3
+
+
+# Python Cache
+
+__pycache__/
+*.pyc
+
+
+# TensorFlow Logs
+
+logs/
+
+
+# Virtual Environment
+
+venv/
+.venv/
+
+
+# VS Code
+
+.vscode/
+
+
+# OS Files
+
+.DS_Store
+Thumbs.db
