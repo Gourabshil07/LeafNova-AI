@@ -1269,87 +1269,70 @@ footer{
 
     /*  Mission & Vision */
 
-    .mission-grid{
+  
 
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 24px;
-        padding:40px 18px;
-        overflow:hidden;
+    .mission-vision{
+
+        padding:30px 18px;
 
     }
 
-    .mission-card{
+    .mv-title h2{
 
-        width:100% !important;
+        font-size:32px;
 
-        max-width:none !important;
+    }
 
-        min-width:0 !important;
+    .mv-title p{
 
-        height:auto;
+        font-size:15px;
+
+    }
+
+    .mv-grid{
+
+        display:grid;
+
+        grid-template-columns:1fr;
+
+        gap:20px;
+
+    }
+
+    .mv-card{
+
+        width:100%;
+
+        min-height:auto;
 
         padding:30px 22px;
 
     }
-    .mission-card h3{
 
-        font-size:16px;
-        line-height: 1.8;
+    .mv-icon{
 
-    }
+        width:70px;
+        height:70px;
 
-    .mission-card p{
+        font-size:34px;
 
-        font-size: 16px;
-        line-height: 1.8;
+        margin-bottom:18px;
 
     }
 
-    .mission-icon{
+    .mv-card h3{
 
-        width:80px;
-
-        height:80px;
-
-        font-size:38px;
-
-        margin-bottom:22px;
+        font-size:2rem;
 
     }
 
-    .mission .glass{
+    .mv-card p{
 
-    padding:35px 18px;
+        font-size:15px;
 
-    }
-    .mission h2{
-
-    font-size:42px;
-    line-height:1.2;
+        line-height:1.8;
 
     }
-    .mission > p{
-
-    width:100%;
-    max-width:100%;
-    font-size:17px;
-    line-height:1.7;
-    margin:18px auto 35px;
-
-    }
-    .mission-grid{
-
-    display:grid !important;
-
-    grid-template-columns:1fr !important;
-
-    gap:22px;
-
-    width:100%;
-
-    }
-
 }
 
 
@@ -1429,55 +1412,60 @@ footer{
 
     }
 
-    /*  Small Mobile- */
+    
 
-    .mission-card{
+    /* Mission & Vision */
 
-        padding: 24px 18px;
+    .mission-vision{
 
-    }
-    .mission .glass{
-
-    padding:28px 15px;
-
-    }
-    .mission h2{
-
-    font-size:34px;
+        padding:25px 15px;
 
     }
 
-    .mission-card h3{
+    .mv-title h2{
 
-        font-size: 32px;
-
-    }
-
-    .mission > p{
-
-    font-size:15px;
-
-    line-height:1.7;
-
-    }
-    .mission-card p{
-
-        font-size: 15px;
-        line-height: 1.7;
-
-    }
-    .mission-grid{
-
-    gap:18px;
+        font-size:28px;
 
     }
 
-    .mission-icon{
+    .mv-title p{
 
-        width: 70px;
-        height: 70px;
-        font-size: 34px;
+        font-size:14px;
 
     }
 
+    .mv-grid{
+
+        gap:16px;
+
+    }
+
+    .mv-card{
+
+        padding:24px 18px;
+
+    }
+
+    .mv-icon{
+
+        width:60px;
+        height:60px;
+
+        font-size:28px;
+
+    }
+
+    .mv-card h3{
+
+        font-size:1.7rem;
+
+    }
+
+    .mv-card p{
+
+        font-size:14px;
+
+        line-height:1.7;
+
+    }
 }

@@ -218,6 +218,26 @@ box-shadow:0 12px 25px rgba(52,199,89,.35);
 
 }
 
+.advice-item{
+
+    margin-bottom:15px;
+
+    padding:14px 18px;
+
+    border-left:4px solid #41d67b;
+
+    background:rgba(255,255,255,.05);
+
+    border-radius:10px;
+
+    color:#fff;
+
+    line-height:1.7;
+
+    font-size:15px;
+
+}
+
 
 .weather-loader{
 

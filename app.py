@@ -60,6 +60,8 @@ def weather():
 def About():
     return render_template("about.html")
 
+
+
 @app.route("/weather_ai", methods=["POST"])
 def weather_ai():
 
@@ -67,9 +69,18 @@ def weather_ai():
 
 
     prompt = f"""
-You are a highly experienced agricultural scientist, agronomist, and crop protection specialist with more than 25 years of practical farming experience.
+You are a highly experienced agricultural scientist, horticulture expert, and plant care advisor with over 25 years of practical experience.
 
-Analyze the following weather conditions carefully and provide professional farming recommendations.
+Your advice is for EVERYONE, including:
+- Farmers
+- Home gardeners
+- People growing flowers, vegetables, fruits, or indoor plants
+- Beginners with no knowledge of farming or plant care
+
+Your task is to analyze ONLY the current weather conditions.
+Do NOT assume any plant disease.
+Do NOT mention diseases unless the weather creates a high risk.
+
 
 Weather Details
 
@@ -81,27 +92,37 @@ Weather Condition: {weather['weather']}
 Visibility: {weather['visibility']}
 Rainfall Chance: {weather['rain']}
 
-Your recommendations should help farmers make better farming decisions for the current weather.
+Write advice using simple, friendly English that anyone can understand.
+Avoid scientific or technical words whenever possible.
 
-Think like a real agricultural officer.
+Your recommendations should be applicable to all types of plants, including agricultural crops,
+vegetables, fruits, flowers, ornamental plants, medicinal plants, herbs, trees, shrubs, and indoor plants.
+Provide practical, easy-to-follow actions that users can take today based only on the current weather conditions.
 
-Consider:
 
-• Irrigation scheduling
-• Water management
-• Fertilizer application
-• Pest management
-• Disease prevention
-• Fungal infection risk
-• Weed management
-• Spraying conditions
-• Harvesting precautions
-• Soil moisture management
-• Heat stress or cold stress
-• Wind damage
-• Crop monitoring
+Focus on:
 
-just give 5 advise not more then that according to the weather and above considaration.
+• Is today's weather suitable for planting or transplanting?
+• Should plants be watered today, or should watering be reduced or postponed?
+• Is the weather good for outdoor gardening or farming activities?
+• Should fertilizer be applied today or should it be delayed?
+• Is today a good day to spray pesticides or fungicides, or should spraying be avoided because of rain, strong wind, or high temperature?
+• Is there any risk from rain, humidity, heat, cold, or strong wind?
+• Does today's weather increase the chance of fungal diseases or pest attacks?
+• What can users do today to keep plants healthy and growing well?
+• Mention any important precautions or activities that should be avoided today.
+
+Guidelines:
+- Use short, clear sentences.
+- Keep each recommendation to one or two sentences.
+- Give practical advice that users can follow immediately.
+- Do not recommend chemicals unless weather conditions are suitable for spraying.
+- If the weather is excellent for farming or gardening, clearly mention that.
+- If weather conditions are risky, explain why and what users should do instead.
+- Make every recommendation easy enough for someone with zero plant knowledge to understand.
+
+Give at least most effective 6-7 most effective advise not more then that.
+
 Return ONLY valid JSON.
 
 Do NOT use markdown.
@@ -165,7 +186,129 @@ Return exactly in this format:
 
 
 
+@app.route("/result_weather_ai", methods=["POST"])
+def result_weather_ai():
 
+    data = request.json
+
+    prompt = f"""
+You are an experienced plant doctor and agricultural expert with over 25 years of practical experience.
+Your advice is for EVERYONE, including:
+- Farmers
+- Home gardeners
+- People with little or no knowledge of plants
+
+The plant disease has already been detected by the AI, and current weather information is available.
+
+Plant Disease Information
+
+Disease:
+{data["disease"]}
+
+Cause:
+{data["cause"]}
+
+Treatment:
+{data["cure"]}
+
+Current Weather
+
+City:
+{data["city"]}
+
+Temperature:
+{data["temperature"]} °C
+
+Humidity:
+{data["humidity"]} %
+
+Wind Speed:
+{data["wind"]} km/h
+
+Weather:
+{data["weather"]}
+
+Visibility:
+{data["visibility"]}
+
+Rainfall:
+{data["rain"]}
+
+Your task is to give practical advice that combines BOTH:
+
+1. The detected disease.
+2. The current weather.
+
+Write advice using simple, everyday English.
+
+Avoid technical or scientific terms whenever possible.
+If a technical term is necessary, briefly explain it in simple words.
+
+Provide practical, step-by-step actions that the user can do TODAY to reduce the disease and help the plant recover.
+
+• 🌿 What should the user do immediately after seeing this disease?
+• 💧 Should the plant be watered today, or should watering be reduced?
+• ☀️ Should the plant be kept in sunlight or moved to shade?
+• ✂️ Should infected leaves or branches be removed?
+• 🧴 Is it safe to spray fungicide or pesticide today considering the weather?
+• 🌧 Should spraying be avoided because of rain or strong wind?
+• 🍄 How can the disease be prevented from spreading to healthy leaves or nearby plants?
+• 🌱 How can the plant recover faster?
+• 🌾 Are any nutrients or fertilizers recommended now, or should they be avoided?
+• ⚠️ Mention any important precautions or mistakes the user should avoid.
+
+
+Guidelines:
+- Keep every recommendation short (1-2 sentences).
+- Give only practical advice.
+- Never suggest unnecessary chemicals.
+- Recommend pesticides or fungicides only if they are appropriate for the detected disease.
+- Mention if no chemical treatment is needed.
+- If weather conditions make spraying ineffective (rain, strong wind, high temperature), clearly tell the user to wait.
+- If the disease is severe, advise consulting a local agricultural expert or plant nursery.
+- Make the advice easy enough for someone with zero plant knowledge to understand.
+
+Return ONLY valid JSON.
+
+Do not use markdown.
+
+Format:
+
+{{
+    "advisory":[
+        "...",
+        "...",
+        "...",
+        "...",
+        "..."
+    ]
+}}
+"""
+
+    response = groq_client.chat.completions.create(
+
+        model="llama-3.3-70b-versatile",
+
+        messages=[
+            {
+                "role":"system",
+                "content":"Return only valid JSON."
+            },
+            {
+                "role":"user",
+                "content":prompt
+            }
+        ],
+
+        temperature=0.3
+
+    )
+
+    text = response.choices[0].message.content.strip()
+
+    text = text.replace("```json","").replace("```","").strip()
+
+    return jsonify(json.loads(text))
 
 
 
@@ -476,6 +619,24 @@ def aqi_api():
     )
 
     return jsonify(requests.get(url).json())
+
+
+@app.route("/result_weather")
+def result_weather():
+
+    lat = request.args.get("lat")
+    lon = request.args.get("lon")
+
+    url = (
+        f"https://api.openweathermap.org/data/2.5/weather?"
+        f"lat={lat}&lon={lon}"
+        f"&appid={OPENWEATHER_API_KEY}"
+        f"&units=metric"
+    )
+
+    response = requests.get(url)
+
+    return jsonify(response.json())
 
 if __name__ == "__main__":
     app.run(debug=True)

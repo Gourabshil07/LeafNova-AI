@@ -1,5 +1,3 @@
-const API_KEY = "16eebc898576f57379b774f365a283a1";
-
 
 function showLoading(message = "Loading Weather") {
 
@@ -46,8 +44,10 @@ async function getCurrentLocation() {
                 showLoading("☁️ Fetching weather...");
 
                 const response = await fetch(
-                    `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric`
+                    `/result_weather?lat=${lat}&lon=${lon}`
                 );
+
+                const data = await response.json();
 
                 showLoading("🤖 Generating AI farming advice...");
                 const data = await response.json();
@@ -65,38 +65,68 @@ async function getCurrentLocation() {
                 document.getElementById("wind").innerText =
                     Math.round(data.wind.speed) + " km/h";
 
-                const rain =
-                    data.rain && data.rain["1h"]
-                        ? data.rain["1h"] + " mm"
-                        : "0 mm";
+                let rainfall = "0 mm";
 
-                document.getElementById("rain").innerText = rain;
-
-                // Weather Recommendation (without Gemini)
-                let advice = "";
-
-                if (data.main.humidity >= 80) {
-                    advice += "High humidity may increase fungal disease. ";
+                if (data.rain) {
+                    if (data.rain["1h"] !== undefined) {
+                        rainfall = data.rain["1h"] + " mm";
+                    }
+                else if (data.rain["3h"] !== undefined) {
+                    rainfall = data.rain["3h"] + " mm";
+                    }
                 }
 
-                if (data.main.temp >= 35) {
-                    advice += "High temperature can stress crops. ";
-                }
+               
 
-                if (data.wind.speed >= 10) {
-                    advice += "Strong wind may spread plant diseases. ";
-                }
 
-                if (data.rain && data.rain["1h"]) {
-                    advice += "Recent rainfall detected. Avoid unnecessary irrigation.";
-                }
+                hideLoading();
 
-                if (advice === "") {
-                    advice = "Current weather conditions are favorable for crop growth.";
-                }
+                btn.innerHTML = "✅ Weather Updated";
+                btn.disabled = false;
 
-                document.getElementById("weatherAdvice").innerText =
-                    advice;
+                document.getElementById("rain").innerText = rainfall;
+
+                // Ask Groq AI for professional farming advice
+
+                const aiResponse = await fetch("/result_weather_ai", {
+
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+
+                    body: JSON.stringify({
+
+                        disease: document.getElementById("diseaseName").innerText,
+
+                        cause: document.getElementById("diseaseCause").innerText,
+
+                        cure: document.getElementById("diseaseCure").innerText,
+
+                        city: data.name,
+
+                        temperature: Math.round(data.main.temp),
+
+                        humidity: data.main.humidity,
+
+                        wind: Math.round(data.wind.speed),
+
+                        weather: data.weather[0].main,
+
+                        visibility: (data.visibility / 1000) + " km",
+
+                        rain: rainfall
+
+                    })
+
+                });
+
+                const result = await aiResponse.json();
+
+                updateWeatherAdvice(result);
+
+
 
                 hideLoading();
                 btn.innerHTML = "✅ Weather Updated";
@@ -106,13 +136,15 @@ async function getCurrentLocation() {
 
             }
             catch (error) {
+
                 hideLoading();
-                console.error(error);
-                alert("Unable to fetch weather.");
+
+                console.error("FULL ERROR:", error);
+
+                alert(error.message);
 
                 btn.innerHTML = "📍 Detect My Location →";
                 btn.disabled = false;
-                
 
             }
 
@@ -129,6 +161,25 @@ async function getCurrentLocation() {
         }
 
     );
+
+}
+
+
+function updateWeatherAdvice(data){
+
+    const box = document.getElementById("weatherAdvice");
+
+    box.innerHTML = "";
+
+    data.advisory.forEach(item => {
+
+        box.innerHTML += `
+            <div class="advice-item">
+                🌿 ${item}
+            </div>
+        `;
+
+    });
 
 }
 

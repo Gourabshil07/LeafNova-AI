@@ -743,7 +743,6 @@ box-shadow:
 
 }
 
-
 .stats-wrapper{
 
     width:92%;
@@ -858,7 +857,7 @@ box-shadow:
 
 
 
-.grid{
+/* .grid{
 
     width:92%;
 
@@ -870,6 +869,17 @@ box-shadow:
 
     gap:25px;
 
+} */
+
+.grid{
+    width:92%;
+    margin:35px auto;
+
+    display:grid;
+    grid-template-columns:2fr 1fr;
+    gap:25px;
+
+    align-items:start;
 }
 
 .panel{
