@@ -7,6 +7,7 @@ const cityInput = document.getElementById("cityInput");
 const searchBtn = document.getElementById("searchBtn");
 const locationBtn = document.getElementById("locationBtn");
 
+
 // Hero Card
 
 const temperature = document.getElementById("temperature");
@@ -64,6 +65,39 @@ const tempEls = [
     document.getElementById("temp7")
 ];
 
+
+function showPopup(icon, title, text){
+
+    Swal.fire({
+
+        icon: icon,
+
+        title: title,
+
+        text: text,
+
+        background: "rgba(25,35,35,0.95)",
+
+        color: "#ffffff",
+
+        confirmButtonText: "OK",
+
+        confirmButtonColor: "#3ad66f",
+
+        backdrop: "rgba(0,0,0,0.7)",
+
+        showClass: {
+            popup: "animate__animated animate__zoomIn"
+        },
+
+        hideClass: {
+            popup: "animate__animated animate__zoomOut"
+        }
+
+    });
+
+}
+
 // Advisory
 
 const advisoryList = document.getElementById("advisoryList");
@@ -78,10 +112,49 @@ const riskText = document.getElementById("riskText");
 const weatherAlerts = document.getElementById("weatherAlerts");
 
 
+function showLoading(){
 
+    const loader = document.getElementById("weatherLoader");
 
+    loader.style.display = "flex";
 
+}
+function hideLoading(){
+
+    const loader = document.getElementById("weatherLoader");
+
+    loader.style.display = "none";
+
+}
+
+function isValidCity(city){
+
+    // Only letters and spaces are allowed
+    const pattern = /^[A-Za-z\s]+$/;
+
+    return pattern.test(city);
+
+}
 // Search Button
+
+// searchBtn.addEventListener("click", () => {
+
+//     const city = cityInput.value.trim();
+
+//     if(city===""){
+
+//         alert("Please enter a city.");
+
+//         return;
+
+//     }
+
+//     // Show loading animation
+//     showLoading();
+//     // Fetch weather
+//     getWeatherByCity(city);
+
+// });
 
 searchBtn.addEventListener("click", () => {
 
@@ -89,15 +162,38 @@ searchBtn.addEventListener("click", () => {
 
     if(city===""){
 
-        alert("Please enter a city.");
+        // alert("Please enter a city name or use your current location.");
+        showPopup(
+        "warning",
+        "City Required",
+        "Please enter a valid city name or use your current location."
+        );
 
         return;
 
     }
 
+    if(!isValidCity(city)){
+
+        // alert("Please enter a valid city name or use your current location.");
+        showPopup(
+        "warning",
+        "City Required",
+        "Please enter a valid city name or use your current location."
+        );
+
+        cityInput.focus();
+
+        return;
+
+    }
+
+    showLoading();
+
     getWeatherByCity(city);
 
 });
+
 
 // Press Enter
 
@@ -121,35 +217,6 @@ locationBtn.addEventListener("click",()=>{
 
 
 
-// async function getWeatherByCity(city){
-
-//     try{
-
-
-
-//         const response = await fetch(
-//         `/weather_api?city=${encodeURIComponent(city)}`
-//         );
-
-//         if(!response.ok){
-
-//             throw new Error("City not found");
-
-//         }
-
-//         const data = await response.json();
-
-//         updateUI(data);
-
-//     }
-
-//     catch(error){
-
-//         alert(error.message);
-
-//     }
-
-// }
 
 async function getWeatherByCity(city){
 
@@ -170,13 +237,21 @@ async function getWeatherByCity(city){
 
         }
 
-        updateUI(data);
+        // updateUI(data);
+        await updateUI(data);
 
     }
 
     catch(error){
 
-        alert(error.message);
+        hideLoading();
+
+        // alert("City not found. Please enter a valid city name or use your current location.");
+        showPopup(
+        "error",
+        "City Not Found",
+        "We couldn't find that city. Please check the spelling or use your current location."
+         );
 
     }
 
@@ -187,7 +262,12 @@ function getCurrentLocation(){
 
     if(!navigator.geolocation){
 
-        alert("Geolocation not supported.");
+        // alert("Geolocation not supported.");
+        showPopup(
+        "info",
+        "Location Not Supported",
+        "Your browser doesn't support location detection."
+        );
 
         return;
 
@@ -196,6 +276,8 @@ function getCurrentLocation(){
     navigator.geolocation.getCurrentPosition(
 
         async(position)=>{
+
+            showLoading();
 
             const lat=position.coords.latitude;
 
@@ -211,13 +293,19 @@ function getCurrentLocation(){
 
             const data=await response.json();
 
-            updateUI(data);
+            // updateUI(data);
+            await updateUI(data);
 
         },
 
         ()=>{
-
-            alert("Unable to detect location.");
+            hideLoading();
+            // alert("Unable to detect location.");
+            showPopup(
+            "warning",
+            "Location Permission Denied",
+            "Please allow location access or search by city."
+             );
 
         }
 
@@ -234,7 +322,7 @@ function formatTime(unix){
 
 }
 
-function updateUI(data){
+async function updateUI(data){
 
     temperature.textContent = Math.round(data.main.temp) + "°C";
     weatherCondition.textContent = data.weather[0].main;
@@ -251,20 +339,42 @@ function updateUI(data){
     tempCard.textContent = Math.round(data.main.temp) + "°C";
     humidityCard.textContent = data.main.humidity + "%";
     windCard.textContent = data.wind.speed + " km/h";
-    rainCard.textContent =
-        (data.rain && data.rain["1h"]) ? data.rain["1h"] + "%" : "0%";
+    // rainCard.textContent =
+    //     (data.rain && data.rain["1h"]) ? data.rain["1h"] + "%" : "0%";
+    const rainfall =
+    data.rain && data.rain["1h"]
+        ? data.rain["1h"]
+        : 0;
+
+    rainCard.textContent = rainfall + " mm";
 
     sunrise.textContent = "🌅 Sunrise : " + formatTime(data.sys.sunrise);
     sunset.textContent = "🌇 Sunset : " + formatTime(data.sys.sunset);
 
-    getAQI(data.coord.lat, data.coord.lon);
-    getForecast(data.coord.lat, data.coord.lon);
 
-    // generateAdvice(data);
-    // updateDiseaseRisk(data);
-    // updateAlerts(data);
-    getGeminiAdvice(data);
+    try{
 
+        await Promise.all([
+
+            getAQI(data.coord.lat, data.coord.lon),
+
+            getForecast(data.coord.lat, data.coord.lon),
+
+            getGroqAdvice(data)
+
+        ]);
+
+    }
+    catch(error){
+
+        console.error(error);
+
+    }
+    finally{
+
+        hideLoading();
+
+    }
 }
 
 
@@ -479,12 +589,16 @@ function updateForecast(data){
 
     let index = 0;
 
+
+
     // Forecast from OpenWeather (5 days)
-    for(let i = 7; i < data.list.length && index < 5; i += 8){
+    for(let i = 7; i < data.list.length;i += 8){
 
         const item = data.list[i];
 
         const date = new Date(item.dt * 1000);
+
+        
 
         // Show Today, Tomorrow, then weekday
         if(index === 0){
@@ -586,53 +700,58 @@ function getWeatherEmoji(weather){
 
 }
 
-async function getGeminiAdvice(weather){
 
-    advisoryList.innerHTML = "<li>Loading advice...</li>";
 
-    riskLevel.textContent = "...";
-    riskText.textContent = "Generating prediction...";
+async function getGroqAdvice(weather){
 
-    weatherAlerts.innerHTML = "<p>Loading...</p>";
+    try{
 
-    const response = await fetch("/weather_ai",{
+        advisoryList.innerHTML = "<li>Loading advice...</li>";
 
-        method:"POST",
+        riskLevel.textContent = "...";
+        riskText.textContent = "Generating prediction...";
 
-        headers:{
-            "Content-Type":"application/json"
-        },
+        weatherAlerts.innerHTML = "<p>Loading...</p>";
 
-        body:JSON.stringify({
+        const response = await fetch("/weather_ai",{
 
-            city:weather.name,
+            method:"POST",
 
-            temperature:weather.main.temp,
+            headers:{
+                "Content-Type":"application/json"
+            },
 
-            humidity:weather.main.humidity,
+            body:JSON.stringify({
 
-            wind:weather.wind.speed,
+                city:weather.name,
+                temperature:weather.main.temp,
+                humidity:weather.main.humidity,
+                wind:weather.wind.speed,
+                weather:weather.weather[0].main,
+                visibility:weather.visibility,
+                rain: weather.rain ? weather.rain["1h"] || 0 : 0
 
-            weather:weather.weather[0].main,
+            })
 
-            visibility:weather.visibility,
+        });
 
-            rain:
+        const result = await response.json();
 
-            weather.rain ?
-            weather.rain["1h"] || 0 : 0
+        updateGroq(result);
 
-        })
+    }
+    catch(error){
 
-    });
+        console.error(error);
 
-    const result = await response.json();
+        advisoryList.innerHTML =
+            "<li>Unable to generate AI recommendations.</li>";
 
-    updateGemini(result);
+    }
 
 }
 
-function updateGemini(data){
+function updateGroq(data){
 
     // AI Advice
 

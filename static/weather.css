@@ -326,7 +326,138 @@ box-shadow:
 
 }
 
+/* loading weather */
+.loading-text{
 
+    font-size:80px;
+    font-weight:700;
+    color:#fff;
+
+}
+
+.loading-text span{
+
+    animation:loadingDots 1.5s infinite;
+
+}
+
+.loading-text span:nth-child(2){
+
+    animation-delay:.2s;
+
+}
+
+.loading-text span:nth-child(3){
+
+    animation-delay:.4s;
+
+}
+
+.loading-text span:nth-child(4){
+
+    animation-delay:.6s;
+
+}
+
+@keyframes loadingDots{
+
+    0%{
+
+        opacity:0;
+
+    }
+
+    50%{
+
+        opacity:1;
+
+    }
+
+    100%{
+
+        opacity:0;
+
+    }
+
+}
+
+
+.weather-loader{
+
+    position:fixed;
+    inset:0;
+
+    background:rgba(0,0,0,.55);
+
+    backdrop-filter:blur(8px);
+
+    display:none;
+
+    justify-content:center;
+    align-items:center;
+
+    z-index:9999;
+}
+
+.loader-spinner{
+
+    width:65px;
+    height:65px;
+
+    border:6px solid rgba(255,255,255,.25);
+
+    border-top:6px solid #4ade80;
+
+    border-radius:50%;
+
+    animation:spin .8s linear infinite;
+
+    margin:auto;
+}
+
+.loader-box{
+
+    width:360px;
+
+    text-align:center;
+
+    background:rgba(255,255,255,.08);
+
+    padding:35px;
+
+    border-radius:20px;
+
+    backdrop-filter:blur(12px);
+}
+
+.loader-box h2{
+
+    margin-top:20px;
+
+    color:white;
+}
+
+.loader-box h2::after{
+
+    content:"";
+
+    animation:dots 1.4s infinite;
+}
+
+@keyframes spin{
+
+    from{transform:rotate(0deg);}
+    to{transform:rotate(360deg);}
+}
+
+@keyframes dots{
+
+    0%{content:"";}
+    25%{content:".";}
+    50%{content:"..";}
+    75%{content:"...";}
+    100%{content:"";}
+}
 
 .hero-card{
 

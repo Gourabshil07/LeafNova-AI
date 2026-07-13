@@ -56,13 +56,13 @@
     <div class="weather-image">
     <div class="overlay">
     <h1 id="temperature">0°C</h1>
-    <h3 id="weatherCondition">Loading...</h3>
-    <div class="pill" id="aqi">AQI • Loading...</div>
+    <h3 id="weatherCondition">Search a city or detect your location</h3>
+    <div class="pill" id="aqi">AQI</div>
     </div>
     </div>
 
     <div class="details">
-    <h3 id="cityName">📍 Loading...</h3>
+    <h3 id="cityName">📍No location selected</h3>
     <ul>
     <li id="sunrise">🌅Sunrise : </li>
     <li id="sunset">🌇 Sunset : </li>
@@ -78,13 +78,12 @@
 <div class="stats-wrapper">  
     <div class="stat"><h4>🌡 Temperature</h4><h2 id="tempCard">0°C</h2></div>
     <div class="stat"><h4>💧 Humidity</h4><h2 id="humidityCard">0%</h2></div>
-    <div class="stat"><h4>🌧 Rain Chance</h4><h2 id="rainCard">0%</h2></div>
+    <div class="stat"><h4>🌧 Rainfall</h4><h2 id="rainCard">0 mm</h2></div>
     <div class="stat"><h4>💨 Wind</h4><h2 id="windCard">0 km/h</h2></div>
 </div>    
 <!-- </section> -->
 
 <section class="grid">
-
 
 <div class="panel">
 
@@ -92,7 +91,7 @@
 
     <ul id="advisoryList">
 
-        <li>Loading advice...</li>
+        <li>🔍 Search a city or use Detect My Location to receive AI farming advice.</li>
 
     </ul>
 
@@ -104,11 +103,11 @@
     <h3>🦠 Disease Risk</h3>
 
     <div class="risk" id="riskLevel">
-        Loading...
+        --
     </div>
 
     <p id="riskText">
-        Loading...
+        Weather data is required to analyze disease risk.
     </p>
 
 </div>
@@ -172,7 +171,7 @@
 
     <div id="weatherAlerts">
 
-        <p>Loading...</p>
+        <p>No weather alerts available.</p>
 
     </div>
 
@@ -188,7 +187,21 @@
  </p>
 </footer>
 
+<!-- Weather Loading Overlay -->
+<div id="weatherLoader" class="weather-loader">
 
+    <div class="loader-box">
+
+        <div class="loader-spinner"></div>
+
+        <h2 id="loaderTitle">Loading Weather</h2>
+
+        <p>Please wait while we fetch the latest weather information.</p>
+
+    </div>
+
+</div>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="{{ url_for('static', filename='weather.js') }}"></script>
 </body>
 </html>

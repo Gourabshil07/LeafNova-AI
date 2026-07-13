@@ -1,12 +1,31 @@
 const API_KEY = "16eebc898576f57379b774f365a283a1";
 
 
+function showLoading(message = "Loading Weather") {
+
+    const loader = document.getElementById("weatherLoader");
+
+    loader.style.display = "flex";
+
+    document.getElementById("loaderTitle").innerText = message;
+}
+
+function hideLoading() {
+
+    document.getElementById("weatherLoader").style.display = "none";
+}
+
+
+
+
 async function getCurrentLocation() {
 
     const btn = document.getElementById("weatherBtn");
 
     btn.innerHTML = "📍 Detecting...";
     btn.disabled = true;
+
+    showLoading("📍 Detecting your location...");
 
     if (!navigator.geolocation) {
         alert("Geolocation is not supported.");
@@ -24,10 +43,13 @@ async function getCurrentLocation() {
                 const lat = position.coords.latitude;
                 const lon = position.coords.longitude;
 
+                showLoading("☁️ Fetching weather...");
+
                 const response = await fetch(
                     `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric`
                 );
 
+                showLoading("🤖 Generating AI farming advice...");
                 const data = await response.json();
 
                 // Update Weather Cards
@@ -76,22 +98,28 @@ async function getCurrentLocation() {
                 document.getElementById("weatherAdvice").innerText =
                     advice;
 
+                hideLoading();
                 btn.innerHTML = "✅ Weather Updated";
+
+            
+                btn.disabled = false;
 
             }
             catch (error) {
-
+                hideLoading();
                 console.error(error);
                 alert("Unable to fetch weather.");
 
                 btn.innerHTML = "📍 Detect My Location →";
                 btn.disabled = false;
+                
 
             }
 
         },
 
         () => {
+            hideLoading();
 
             alert("Location permission denied.");
 

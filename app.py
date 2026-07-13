@@ -1,3 +1,4 @@
+
 from email.mime import image
 from flask import Flask, render_template, request, redirect, send_from_directory, jsonify
 import numpy as np
@@ -33,11 +34,7 @@ genai.configure(api_key=GEMINI_API_KEY)
 
 gemini_model = genai.GenerativeModel("gemini-2.5-flash")
 
-
 groq_client = Groq(api_key=GROQ_API_KEY)
-
-
-
 
 model = tf.keras.models.load_model("models/plant_disease_prediction_model.keras")
 
@@ -62,8 +59,6 @@ def weather():
 @app.route("/about")
 def About():
     return render_template("about.html")
-
-
 
 @app.route("/weather_ai", methods=["POST"])
 def weather_ai():
@@ -234,16 +229,13 @@ def extract_features(image):
     return feature
 
 
-
 def model_predict(image):
 
     img = extract_features(image)
 
-    prediction = model.predict(img)[0]
+    prediction = model.predict(img)
 
-    index = np.argmax(prediction)
-
-    confidence = float(prediction[index]) * 100
+    index = prediction.argmax()
 
     data = plant_disease[index]
 
@@ -251,45 +243,49 @@ def model_predict(image):
     cause = data["cause"]
     cure = data["cure"]
 
-    print(f"Prediction: {name}")
-    print(f"Confidence: {confidence:.2f}%")
+    verified, ai_name, ai_cause, ai_cure = verify_prediction(
+        image,
+        name
+    )
 
-    if confidence >= 90:
-        print("✅ TensorFlow prediction accepted.")
+    if verified:
         return name, cause, cure
-
-    print("⚠ Low confidence. Switching to Gemini Vision.")
-
-    ai_name, ai_cause, ai_cure = verify_prediction(image)
 
     return ai_name, ai_cause, ai_cure
 
 
-
-def verify_prediction(image_path):
+def verify_prediction(image_path, predicted_name):
 
     image = PIL.Image.open(image_path)
 
-    prompt = """
-You are an expert agricultural scientist and plant pathologist.
+    prompt = f"""
+You are an agriculture expert.
 
-Analyze the uploaded leaf image carefully.
+The TensorFlow model predicted:
 
-Identify the plant disease.
+{predicted_name}
 
-If you are not sure, return "Unknown Disease".
+Look carefully at the uploaded leaf.
 
-Return ONLY valid JSON.
+If the TensorFlow prediction is correct,
+return ONLY this JSON:
 
-{
+{{
+    "match":"YES"
+}}
+
+If the prediction is wrong or you are not confident,
+analyze the image yourself and return ONLY this JSON:
+
+{{
+    "match":"NO",
     "name":"Disease Name",
-    "cause":"Cause of the disease",
-    "cure":"Treatment and prevention"
-}
+    "cause":"Cause",
+    "cure":"Treatment"
+}}
 
+Return ONLY JSON.
 Do not use markdown.
-
-Do not write anything except JSON.
 """
 
     try:
@@ -302,29 +298,21 @@ Do not write anything except JSON.
 
         data = json.loads(text)
 
+        if data["match"] == "YES":
+            return True, None, None, None
+
         return (
-
-            data.get("name", "Unknown Disease"),
-
-            data.get("cause", "Not Available"),
-
-            data.get("cure", "Not Available")
-
+            False,
+            data.get("name","Unknown Disease"),
+            data.get("cause","Not Available"),
+            data.get("cure","Not Available")
         )
 
     except Exception as e:
 
         print(e)
 
-        return (
-
-            "Unknown Disease",
-
-            "Not Available",
-
-            "Not Available"
-
-        )
+        return False, "Unknown Disease", "Not Available", "Not Available"
     
 def get_ai_explanation(name, cause, cure, language):
 
@@ -371,6 +359,7 @@ def allowed_file(filename):
         "." in filename and
         filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
     )
+
 
 @app.route('/upload/', methods=['POST', 'GET'])
 def uploadimage():
