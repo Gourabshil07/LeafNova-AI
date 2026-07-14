@@ -1,3 +1,5 @@
+const API_KEY = "16eebc898576f57379b774f365a283a1";
+
 
 function showLoading(message = "Loading Weather") {
 
@@ -44,10 +46,8 @@ async function getCurrentLocation() {
                 showLoading("☁️ Fetching weather...");
 
                 const response = await fetch(
-                    `/result_weather?lat=${lat}&lon=${lon}`
+                    `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric`
                 );
-
-                const data = await response.json();
 
                 showLoading("🤖 Generating AI farming advice...");
                 const data = await response.json();

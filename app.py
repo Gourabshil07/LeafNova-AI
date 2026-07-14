@@ -8,6 +8,7 @@ import tensorflow as tf
 import google.generativeai as genai
 import PIL.Image
 from groq import Groq
+import traceback
 
 
 # from googletrans import Translator
@@ -246,16 +247,16 @@ If a technical term is necessary, briefly explain it in simple words.
 
 Provide practical, step-by-step actions that the user can do TODAY to reduce the disease and help the plant recover.
 
-• 🌿 What should the user do immediately after seeing this disease?
-• 💧 Should the plant be watered today, or should watering be reduced?
-• ☀️ Should the plant be kept in sunlight or moved to shade?
-• ✂️ Should infected leaves or branches be removed?
-• 🧴 Is it safe to spray fungicide or pesticide today considering the weather?
-• 🌧 Should spraying be avoided because of rain or strong wind?
-• 🍄 How can the disease be prevented from spreading to healthy leaves or nearby plants?
-• 🌱 How can the plant recover faster?
-• 🌾 Are any nutrients or fertilizers recommended now, or should they be avoided?
-• ⚠️ Mention any important precautions or mistakes the user should avoid.
+• What should the user do immediately after seeing this disease?
+• Should the plant be watered today, or should watering be reduced?
+• Should the plant be kept in sunlight or moved to shade?
+• Should infected leaves or branches be removed?
+• Is it safe to spray fungicide or pesticide today considering the weather?
+• Should spraying be avoided because of rain or strong wind?
+• How can the disease be prevented from spreading to healthy leaves or nearby plants?
+• How can the plant recover faster?
+• Are any nutrients or fertilizers recommended now, or should they be avoided?
+• Mention any important precautions or mistakes the user should avoid.
 
 
 Guidelines:
@@ -372,13 +373,113 @@ def extract_features(image):
     return feature
 
 
+def gemini_image_analysis(image_path):
+
+    print(">>>> GEMINI VISION CALLED <<<<")
+
+    try:
+
+        image = PIL.Image.open(image_path)
+
+        prompt = """
+You are a highly experienced agricultural scientist, plant pathologist, and crop protection specialist with over 30 years of practical field experience.
+
+Your task is to analyze ONLY the uploaded plant leaf.
+
+Ignore:
+- Background
+- Soil
+- Pot
+- Hands
+- Sky
+- Shadows
+- Any object other than the leaf
+
+Identify the plant disease.
+
+Return ONLY valid JSON.
+
+{
+    "name":"",
+    "cause":"",
+    "cure":""
+}
+
+Rules:
+
+1. Disease Name
+- Return the complete disease name.
+- If the leaf is healthy return "Healthy Leaf".
+- If the disease cannot be confidently identified return "Unknown Disease".
+
+2. Cause
+Explain:
+- Cause
+- Disease type
+- Spread
+- Effect on plant
+
+Use simple English.
+
+3. Cure
+Include:
+- Remove infected leaves
+- Water management
+- Air circulation
+- Recommended fungicide/insecticide only if necessary
+- Organic treatment if available
+- Prevention tips
+
+Return ONLY JSON.
+Do NOT use Markdown.
+"""
+
+        response = gemini_model.generate_content(
+            [prompt, image],
+            generation_config={
+                "temperature": 0
+            }
+        )
+
+        text = response.text.strip()
+
+        print("=" * 80)
+        print(text)
+        print("=" * 80)
+
+        if text.startswith("```json"):
+            text = text.replace("```json", "").replace("```", "").strip()
+
+        elif text.startswith("```"):
+            text = text.replace("```", "").strip()
+
+        data = json.loads(text)
+
+        return (
+            data.get("name", "Unknown Disease"),
+            data.get("cause", "Not Available"),
+            data.get("cure", "Not Available")
+        )
+
+    except Exception:
+
+        traceback.print_exc()
+
+        return (
+            "Unknown Disease",
+            "Not Available",
+            "Not Available"
+        )
+
 def model_predict(image):
 
     img = extract_features(image)
 
-    prediction = model.predict(img)
+    prediction = model.predict(img, verbose=0)
 
-    index = prediction.argmax()
+    confidence = float(np.max(prediction)) * 100
+
+    index = np.argmax(prediction)
 
     data = plant_disease[index]
 
@@ -386,85 +487,38 @@ def model_predict(image):
     cause = data["cause"]
     cure = data["cure"]
 
-    verified, ai_name, ai_cause, ai_cure = verify_prediction(
-        image,
-        name
-    )
+    print("=" * 60)
+    print(f"TensorFlow Prediction : {name}")
+    print(f"Confidence : {confidence:.2f}%")
+    print("=" * 60)
 
-    if verified:
-        return name, cause, cure
+    # Background image
+    if name == "Background without leaves":
+        print("Background detected -> Gemini Vision")
+        return gemini_image_analysis(image)
 
-    return ai_name, ai_cause, ai_cure
+    # Low confidence
+    if confidence < 90:
+        print("Confidence below 90% -> Gemini Vision")
+        return gemini_image_analysis(image)
+
+    print("TensorFlow prediction accepted.")
+
+    return name, cause, cure
 
 
-def verify_prediction(image_path, predicted_name):
 
-    image = PIL.Image.open(image_path)
 
-    prompt = f"""
-You are an agriculture expert.
 
-The TensorFlow model predicted:
-
-{predicted_name}
-
-Look carefully at the uploaded leaf.
-
-If the TensorFlow prediction is correct,
-return ONLY this JSON:
-
-{{
-    "match":"YES"
-}}
-
-If the prediction is wrong or you are not confident,
-analyze the image yourself and return ONLY this JSON:
-
-{{
-    "match":"NO",
-    "name":"Disease Name",
-    "cause":"Cause",
-    "cure":"Treatment"
-}}
-
-Return ONLY JSON.
-Do not use markdown.
-"""
-
+def get_ai_explanation(name, cause, cure, language):
     try:
 
-        response = gemini_model.generate_content([prompt, image])
+        prompt = f"""
+You are an experienced agricultural scientist and plant disease expert.
 
-        text = response.text.strip()
+Explain the following plant disease in {language}.
 
-        text = text.replace("```json", "").replace("```", "").strip()
-
-        data = json.loads(text)
-
-        if data["match"] == "YES":
-            return True, None, None, None
-
-        return (
-            False,
-            data.get("name","Unknown Disease"),
-            data.get("cause","Not Available"),
-            data.get("cure","Not Available")
-        )
-
-    except Exception as e:
-
-        print(e)
-
-        return False, "Unknown Disease", "Not Available", "Not Available"
-    
-def get_ai_explanation(name, cause, cure, language):
-
-    prompt = f"""
-You are an agriculture expert.
-
-Explain this plant disease in very simple words for farmers.
-
-Disease Name:
+Disease:
 {name}
 
 Cause:
@@ -473,28 +527,42 @@ Cause:
 Treatment:
 {cure}
 
-Rules:
-
-1. Explain in {language}.
-2. Use very easy language.
-3. Maximum 150 words.
-4. Explain:
-- What is this disease?
-- Why does it happen?
-- How can the farmer cure it?
-- How can it be prevented?
-5. Do not use difficult scientific terms.
-6. Do not use markdown.
-7. Do not use HTML.
-8. Do not use bullet points.
+Requirements:
+- Use simple, easy-to-understand language.
+- Explain what the disease is.
+- Explain why it happens.
+- Explain how it spreads (if applicable).
+- Explain the treatment.
+- Give prevention tips.
+- Make the explanation useful for farmers and beginners.
+- Keep the response around 180-250 words.
+- Do NOT use Markdown.
+- Do NOT return JSON.
+- Return only plain text.
 """
 
-    try:
-        response = gemini_model.generate_content(prompt)
-        return response.text
+        response = groq_client.chat.completions.create(
+            model="llama-3.3-70b-versatile",
+            temperature=0.4,
+            messages=[
+                {
+                    "role": "system",
+                    "content": "You are an expert agricultural scientist. Explain plant diseases in simple language."
+                },
+                {
+                    "role": "user",
+                    "content": prompt
+                }
+            ]
+        )
+
+        return response.choices[0].message.content.strip()
 
     except Exception as e:
-        return f"Error: {str(e)}"
+        print("Groq Explanation Error:", e)
+        return "Unable to generate AI explanation at the moment."
+    
+
 
 ALLOWED_EXTENSIONS = {"jpg", "jpeg", "png"}
 def allowed_file(filename):
