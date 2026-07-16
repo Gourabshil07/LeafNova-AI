@@ -1,180 +1,360 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LeafNova AI</title>
-<link rel="stylesheet" href="/static/style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LeafNova AI | Smart Plant Guide</title>
+
+   
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
 </head>
 <body>
 
+<!-- NAVBAR  -->
 <header class="navbar">
-<div class="logo">🌿 LeafNova AI</div>
-<nav>
-<a href="/" class="active">Home</a>
-<a href="/weather">Weather</a>
-<a href="/about">About</a>
-</nav>
-</header>
 
-<section class="hero" id="upload">
-<div class="hero-content">
-<h1>AI Powered Plant Disease Detection</h1>
-<p>Detect plant diseases using TensorFlow and Gemini AI with multilingual voice support.</p>
+    <div class="logo">
 
-<!-- <form
-    id="uploadForm"
-    action="/upload/"
-    method="POST"
-    enctype="multipart/form-data"
-    class="upload-card">
+        <i class="fa-solid fa-seedling"></i>
 
-    <input
-        type="file"
-        name="img"
-        id="img"
-        accept=".jpg,.jpeg,.png,image/jpeg,image/png"
-        required>
+        <span>LeafNova <strong>AI</strong></span>
 
-    <button type="submit">
-        🔍 Detect Disease
-    </button>
+    </div>
+    <nav>
+        <a class="active" href="/Home">Home</a>
+        <!-- <a href="/">Home</a> -->
 
-</form> -->
+        
+        <a href="/disease_detection">Disease Detection</a>
 
+        <a href="/plant-guide">Plant Guide</a>
 
-<form
-    id="uploadForm"
-    action="/upload/"
-    method="POST"
-    enctype="multipart/form-data"
-    class="upload-card">
+        <a href="/weather">Weather</a>
 
-    <!-- <div class="upload-row">
+    
+        <a href="/about">About</a>
 
-        <input
-            type="file"
-            name="img"
-            id="img"
-            accept=".jpg,.jpeg,.png,image/jpeg,image/png"
-            required>
+    </nav>
 
-        <button type="submit">
-            🔍 Detect Disease
+    <div class="nav-right">
+
+        <!-- Desktop Theme Button -->
+        <button class="theme-btn">
+
+            <i class="fa-solid fa-sun"></i>
+
         </button>
 
-    </div> -->
+        <!-- Mobile Menu Button -->
+        <button class="menu-btn" id="menuBtn">
 
-    <div class="upload-row">
+            <i class="fa-solid fa-bars"></i>
 
-    <div class="custom-upload">
-
-        <input
-            type="file"
-            name="img"
-            id="img"
-            accept=".jpg,.jpeg,.png,image/jpeg,image/png"
-            required
-            hidden>
-
-        <label for="img" class="choose-btn">
-            📂 Choose Image
-        </label>
-
-        <span id="selectedFile">
-            No image selected
-        </span>
+        </button>
 
     </div>
 
-    <button id="detectBtn" type="submit">
-        🔍 Detect Disease
+</header>
+
+<!-- Mobile Menu -->
+
+<div class="mobile-menu" id="mobileMenu">
+
+    <button class="close-menu" id="closeMenu">
+
+        <i class="fa-solid fa-xmark"></i>
+
     </button>
 
+    <div class="mobile-logo">
+
+        <i class="fa-solid fa-seedling"></i>
+
+        <span>LeafNova <strong>AI</strong></span>
+
     </div>
 
-</form>
+    <a href="/">🏠 Home</a>
 
-</div>
-</section>
+    <a href="/disease_detection">🌿 Disease Detection</a>
 
-{% if result %}
-<section class="result-card fade">
+    <a href="/weather">☁ Weather</a>
 
-<div class="image-panel">
-<img src="{{ imagepath }}" class="leaf">
-</div>
+    <a href="/plant-guide">📖 Plant Guide</a>
 
-<div class="info-panel">
-
-<h2>Prediction Result</h2>
-
-<div class="card">
-<h3>🌿 Disease</h3>
-<p id="diseaseName">{{ name }}</p>
-</div>
-
-<div class="card">
-<h3>⚠ Cause</h3>
-<p id="diseaseCause">{{ cause }}</p>
-</div>
-
-<div class="card">
-<h3>💊 Cure</h3>
-<p id="diseaseCure">{{ cure }}</p>
-</div>
-
-<div class="btn-group">
-<button id="bnBtn" onclick="askAI('bn')" type="button">🌱 Bengali</button>
-<button id="hiBtn" onclick="askAI('hi')" type="button">🌱 Hindi</button>
-</div>
-
-<div id="aiBox" class="ai-box" style="display:none;">
-<h3>🤖 AI Explanation</h3>
-<p id="aiText"></p>
-</div>
-
-<audio id="player" controls style="display:none;width:100%;margin-top:15px;"></audio>
+    <a href="/about">ℹ About</a>
 
 </div>
 
-</section>
-{% endif %}
+<!-- ================= HERO SECTION ================= -->
 
+<section class="hero">
 
+   <div class="hero-content">
 
-<!--LOADING SCREEN -->
+    <span class="hero-tag">
+        <i class="fa-solid fa-leaf"></i>
+        AI Powered Smart Farming
+    </span>
 
-<div id="loadingScreen">
+    <div class="hero-main">
 
-    <div class="loading-card">
+        <h1 class="hero-title">
+            <span class="typing-text"></span><br>
 
-        <div class="leaf-loader">
-            🌿
-        </div>
+            <span class="brand">
+                LeafNova <span class="ai-text">AI</span>
+            </span>
+        </h1>
 
-        <div class="spinner"></div>
-
-        <h2>Analyzing Leaf</h2>
-
-        <p id="loadingText">
-            Uploading image...
+        <p>
+            Smart planting, AI disease detection, weather intelligence,
+            and personalized plant care — all in one intelligent platform
+            for healthier crops and better farming decisions.
         </p>
 
-        <div class="progress">
-            <div class="progress-bar"></div>
+        <div class="hero-buttons">
+
+            <a href="/disease_detection" class="btn-primary">
+                Detect Disease
+            </a>
+
+            <a href="/plant-guide" class="btn-secondary">
+                Explore Plant Guide
+            </a>
+
         </div>
 
     </div>
 
+    <!-- hero-stats -->
+
 </div>
 
-<footer>
+</section>
 
-    <p>© 2026 LeafNova AI | AI-Powered Decision Support for Sustainable Agriculture</p>
+<!-- ================= FEATURES SECTION ================= -->
+
+<section class="features-section">
+
+    <div class="section-header">
+
+        <span class="section-tag">
+            <i class="fa-solid fa-leaf"></i>
+            LeafNova AI Ecosystem
+        </span>
+
+        <h2>
+            Everything You Need
+            <span>For Healthy Plants</span>
+        </h2>
+
+        <p>
+            Discover intelligent tools designed to help you monitor,
+            diagnose, and care for your plants from one modern platform.
+        </p>
+
+    </div>
+
+    <div class="feature-grid">
+
+        <!-- Card 1 -->
+
+        <div class="feature-card">
+
+            <div class="feature-icon">
+                <i class="fa-solid fa-microscope"></i>
+            </div>
+
+            <h3>AI Disease Detection</h3>
+
+            <p>
+                Upload a leaf and get instant disease detection with AI-powered analysis.
+            </p>
+
+            <a href="/disease_detection">
+                Try Detection
+                <i class="fa-solid fa-arrow-right"></i>
+            </a>
+
+        </div>
+
+        <!-- Card 2 -->
+
+        <div class="feature-card">
+
+            <div class="feature-icon">
+                <i class="fa-solid fa-book-open"></i>
+            </div>
+
+            <h3>Plant Guide</h3>
+
+            <p>
+                Explore diseases, fertilizers, watering schedules and complete care tips.
+            </p>
+
+            <a href="/plant-guide">
+                Explore Guide
+                <i class="fa-solid fa-arrow-right"></i>
+            </a>
+
+        </div>
+
+        <!-- Card 3 -->
+
+        <div class="feature-card">
+
+            <div class="feature-icon">
+                <i class="fa-solid fa-cloud-sun-rain"></i>
+            </div>
+
+            <h3>Weather Advisory</h3>
+
+            <p>
+                Live weather insights with smart farming recommendations.
+            </p>
+
+            <a href="/weather">
+                View Weather
+                <i class="fa-solid fa-arrow-right"></i>
+            </a>
+
+        </div>
+
+        <!-- Card 4 -->
+
+        <div class="feature-card">
+
+            <div class="feature-icon">
+                <i class="fa-solid fa-seedling"></i>
+            </div>
+
+            <h3>Daily Plant Care</h3>
+
+            <p>
+                Simple daily watering, fertilizing and maintenance reminders.
+            </p>
+
+            <a href="#">
+                Learn More
+                <i class="fa-solid fa-arrow-right"></i>
+            </a>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- ================= FOOTER ================= -->
+
+<footer class="footer">
+
+    <div class="footer-container">
+
+        <!-- Left -->
+
+        <div class="footer-brand">
+
+            <div class="footer-logo">
+                <i class="fa-solid fa-seedling"></i>
+                <span>LeafNova <strong>AI</strong></span>
+            </div>
+
+            <p>
+                Smart plant care powered by Artificial Intelligence.
+                Detect diseases, receive weather insights, explore plant
+                guides and grow healthier plants with confidence.
+            </p>
+
+            <div class="footer-social">
+
+                <a href="#"><i class="fa-brands fa-github"></i></a>
+
+                <a href="#"><i class="fa-brands fa-linkedin"></i></a>
+
+                <a href="#"><i class="fa-brands fa-instagram"></i></a>
+
+            </div>
+
+        </div>
+
+        <!-- Quick Links -->
+
+        <div class="footer-column">
+
+            <h3>Quick Links</h3>
+
+            <a href="/Home">Home</a>
+
+            <a href="/disease_detection">Disease Detection</a>
+
+            <a href="/plant-guide">Plant Guide</a>
+
+            <a href="/weather">Weather</a>
+
+            <a href="/about">About</a>
+
+        </div>
+
+        <!-- Features -->
+
+        <div class="footer-column">
+
+            <h3>Features</h3>
+
+            <a href="#">AI Detection</a>
+
+            <a href="#">Plant Guide</a>
+
+            <a href="#">Weather Advisory</a>
+
+            <a href="#">Daily Plant Care</a>
+
+        </div>
+
+        <!-- Contact -->
+
+        <div class="footer-column">
+
+            <h3>Contact</h3>
+
+            <p><i class="fa-solid fa-envelope"></i> support@leafnova.ai</p>
+
+            <p><i class="fa-solid fa-location-dot"></i> West Bengal, India</p>
+
+            <p><i class="fa-solid fa-clock"></i> AI Support 24/7</p>
+
+        </div>
+
+    </div>
+
+    <div class="footer-bottom">
+
+        <p>
+            © 2026 <strong>LeafNova AI</strong>. All Rights Reserved.
+        </p>
+
+        <p>
+            Built with ❤️ for smarter and healthier plant care.
+        </p>
+
+    </div>
 
 </footer>
 
-<script src="/static/script.js"></script>
+
+
+<script src="{{ url_for('static', filename='style.js') }}"></script>
+
 </body>
 </html>

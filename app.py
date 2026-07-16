@@ -9,7 +9,8 @@ import google.generativeai as genai
 import PIL.Image
 from groq import Groq
 import traceback
-
+from ai.plant_guide import generate_plant_guide
+from plant_validator import validate_plant_name
 
 # from googletrans import Translator
 from gtts import gTTS
@@ -24,8 +25,6 @@ GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 OPENWEATHER_API_KEY = os.getenv("OPENWEATHER_API_KEY")
 
-
-
 app = Flask(__name__)
 os.makedirs("uploadimages", exist_ok=True)
 
@@ -35,9 +34,10 @@ genai.configure(api_key=GEMINI_API_KEY)
 
 gemini_model = genai.GenerativeModel("gemini-2.5-flash")
 
-groq_client = Groq(api_key=GROQ_API_KEY)
+from config import groq_client
 
 model = tf.keras.models.load_model("models/plant_disease_prediction_model.keras")
+
 
 # Load disease JSON
 with open("plant_disease.json", "r") as file:
@@ -53,6 +53,15 @@ def uploaded_images(filename):
 def home():
     return render_template('home.html')
 
+@app.route("/disease_detection")
+def disease_detection():
+    return render_template("disease_detection.html")
+
+@app.route("/plant-guide")
+def plant_guide():
+    return render_template("plant_guide.html")
+
+
 @app.route("/weather")
 def weather():
     return render_template("weather.html")
@@ -60,6 +69,8 @@ def weather():
 @app.route("/about")
 def About():
     return render_template("about.html")
+
+
 
 
 
@@ -365,6 +376,49 @@ def ask_ai():
     return {
         "answer": explanation
     }
+
+
+
+@app.route("/generate_guide", methods=["POST"])
+def generate_guide():
+
+    data = request.get_json()
+
+    plant = data.get("plant", "").strip()
+    season = data.get("season", "").strip()
+
+    if not plant:
+        return jsonify({
+            "success": False,
+            "message": "Plant name is required."
+        }), 400
+
+    if not season:
+        return jsonify({
+            "success": False,
+            "message": "Please select a season."
+        }), 400
+
+    try:
+
+        # First API
+        validation = validate_plant_name(plant)
+
+        if not validation["success"]:
+            return jsonify(validation)
+
+        # Second API
+        guide = generate_plant_guide(plant, season)
+
+        return jsonify(guide)
+
+    except Exception as e:
+
+        return jsonify({
+            "success": False,
+            "message": str(e)
+        }), 500
+
 
 def extract_features(image):
     image = tf.keras.utils.load_img(image, target_size=(160, 160))

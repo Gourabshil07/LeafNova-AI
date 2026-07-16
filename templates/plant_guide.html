@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LeafNova AI | Smart Plant Guide</title>
+
+   
+    <link rel="stylesheet" href="{{ url_for('static', filename='plant_guide.css') }}">
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+</head>
+<body>
+
+<!-- NAVBAR  -->
+<header class="navbar">
+
+    <div class="logo">
+
+        <i class="fa-solid fa-seedling"></i>
+
+        <span>LeafNova <strong>AI</strong></span>
+
+    </div>
+    <nav>
+
+        <a href="/">Home</a>
+
+        <a href="/disease_detection">Disease Detection</a>
+
+        <a class="active" href="/plant-guide">Plant Guide</a>
+
+        <a href="/weather">Weather</a>
+
+    
+        <a href="/about">About</a>
+
+    </nav>
+
+    <div class="nav-right">
+
+        <!-- Desktop Theme Button -->
+        <button class="theme-btn">
+
+            <i class="fa-solid fa-sun"></i>
+
+        </button>
+
+        <!-- Mobile Menu Button -->
+        <button class="menu-btn" id="menuBtn">
+
+            <i class="fa-solid fa-bars"></i>
+
+        </button>
+
+    </div>
+
+</header>
+
+<!-- Mobile Menu -->
+
+<div class="mobile-menu" id="mobileMenu">
+
+    <button class="close-menu" id="closeMenu">
+
+        <i class="fa-solid fa-xmark"></i>
+
+    </button>
+
+    <div class="mobile-logo">
+
+        <i class="fa-solid fa-seedling"></i>
+
+        <span>LeafNova <strong>AI</strong></span>
+
+    </div>
+
+    <a href="/">🏠 Home</a>
+
+    <a href="/">🌿 Disease Detection</a>
+
+    <a href="/weather">☁ Weather</a>
+
+    <a href="/plant-guide">📖 Plant Guide</a>
+
+    <a href="/about">ℹ About</a>
+
+</div>
+
+
+
+
+
+<!-- ================= HERO ================= -->
+
+<section class="hero">
+
+<div class="hero-glass">
+
+<!-- LEFT -->
+
+<div class="hero-left">
+
+<div class="hero-title">
+
+<h1>
+
+<span>Smart</span>
+
+<strong>Plant Guide</strong>
+
+</h1>
+
+<p>
+
+AI-powered complete cultivation assistant for every gardener and farmer.
+
+</p>
+
+</div>
+
+<!-- SEARCH -->
+
+<div class="search-section">
+
+
+
+<div class="search-box">
+
+<i class="fa-solid fa-magnifying-glass"></i>
+
+<input
+type="text"
+placeholder="Search plant (Tomato, Rose, Mango...)"
+id="plantName">
+
+</div>
+
+</div>
+
+
+
+<!-- SEASON -->
+
+<div class="season-wrapper">
+
+<label>Select Season</label>
+
+<div class="season-grid">
+
+<div class="season-card" data-season="Summer">
+    <i class="fa-solid fa-sun"></i>
+    <span>Summer</span>
+</div>
+
+<div class="season-card" data-season="Winter">
+    <i class="fa-regular fa-snowflake"></i>
+    <span>Winter</span>
+</div>
+
+<div class="season-card" data-season="Rainy">
+    <i class="fa-solid fa-cloud-rain"></i>
+    <span>Rainy</span>
+</div>
+
+<div class="season-card" data-season="Spring">
+    <i class="fa-solid fa-leaf"></i>
+    <span>Spring</span>
+</div>
+
+</div>
+
+</div>
+
+
+
+<!-- LOCATION -->
+
+<div class="location-box">
+
+<div class="location-left">
+
+<i class="fa-solid fa-location-dot"></i>
+
+<div>
+
+<h4>Location (Optional)</h4>
+
+<p id="locationName">click location</p>
+
+</div>
+
+</div>
+
+<button id="detectBtn">
+
+<i class="fa-solid fa-location-crosshairs"></i>
+
+Detect Location
+
+</button>
+
+</div>
+
+
+
+<!-- BUTTON -->
+
+<button class="generate-btn">
+
+Generate Growing Guide
+
+<i class="fa-solid fa-arrow-right"></i>
+
+</button>
+
+</div>
+
+
+</section>
+
+
+
+
+
+<!-- ================= PLACEHOLDER ================= -->
+
+<section class="guide-placeholder">
+
+<div class="placeholder-card">
+
+<i class="fa-solid fa-seedling"></i>
+
+<h2>
+
+Your AI Plant Guide will appear here
+
+</h2>
+
+<p>
+
+Search a plant above and click
+
+<b>Generate Growing Guide</b>
+
+to receive a complete cultivation guide.
+
+</p>
+
+</div>
+
+</section>
+
+
+
+<section id="guideResult" class="guide-result" style="display:none;">
+
+    <div class="guide-header">
+
+        <h2 id="plantTitle"></h2>
+
+        <p>AI Generated Cultivation Guide</p>
+
+    </div>
+
+    <div class="guide-grid">
+
+        <div class="guide-card overview-card">
+
+            <h3>🌱 Plant Overview</h3>
+
+            <p>
+                <strong>Scientific Name:</strong>
+                <span id="scientificName"></span>
+            </p>
+
+            <p>
+                <strong>Plant Type:</strong>
+                <span id="plantType"></span>
+            </p>
+
+            <p>
+                <strong>Growing Season:</strong>
+                <span id="growingSeason"></span>
+            </p>
+
+            <p>
+                <strong>Difficulty:</strong>
+                <span id="difficulty"></span>
+            </p>
+
+            <p id="description"></p>
+
+        </div>
+        <div class="guide-card soil-card">
+
+            <h3>🌱 Soil Requirements</h3>
+
+            <p><strong>Best Soil:</strong> <span id="bestSoil"></span></p>
+
+            <p><strong>Soil pH:</strong> <span id="soilPH"></span></p>
+
+            <p><strong>Organic Matter:</strong> <span id="organicMatter"></span></p>
+
+            <p><strong>Preparation:</strong> <span id="soilPreparation"></span></p>
+
+        </div>
+
+        <div class="guide-card climate-card">
+
+            <h3>☀ Climate</h3>
+
+            <p><strong>Temperature:</strong> <span id="temperature"></span></p>
+
+            <p><strong>Humidity:</strong> <span id="humidity"></span></p>
+
+            <p><strong>Sunlight:</strong> <span id="sunlight"></span></p>
+
+        </div>
+
+        <div class="guide-card watering-card">
+
+            <h3>💧 Watering</h3>
+
+            <p><strong>Frequency:</strong> <span id="wateringFrequency"></span></p>
+
+            <p><strong>Method:</strong> <span id="wateringMethod"></span></p>
+
+            <p><strong>Tips:</strong> <span id="wateringTips"></span></p>
+
+        </div>
+
+        <div class="guide-card fertilizer-card">
+
+            <h3>🌿 Fertilizer</h3>
+
+            <p><strong>Type:</strong> <span id="fertilizerType"></span></p>
+
+            <p><strong>Schedule:</strong> <span id="fertilizerSchedule"></span></p>
+
+            <p><strong>Quantity:</strong> <span id="fertilizerQuantity"></span></p>
+
+        </div>
+
+        <div class="guide-card pest-card">
+
+            <h3>🐞 Pest & Disease</h3>
+
+            <ul id="pestList"></ul>
+
+        </div>
+
+        <div class="guide-card maintenance-card">
+
+            <h3>🛠 Maintenance</h3>
+
+            <ul id="maintenanceList"></ul>
+
+        </div>
+
+        <div class="guide-card weekly-card">
+
+            <h3>📅 Weekly Care</h3>
+
+            <ul id="weeklyCareList"></ul>
+
+        </div>
+
+        <div class="guide-card timeline-card">
+
+            <h3>📈 Growth Timeline</h3>
+
+            <ul id="timelineList"></ul>
+
+        </div>
+
+        <div class="guide-card mistakes-card">
+
+            <h3>❌ Common Mistakes</h3>
+
+            <ul id="mistakesList"></ul>
+
+        </div>
+
+        <div class="guide-card harvest-card">
+
+            <h3>🧺 Harvest</h3>
+
+            <p><strong>Harvest Time:</strong> <span id="harvestTime"></span></p>
+
+            <p><strong>Signs:</strong> <span id="harvestSigns"></span></p>
+
+            <p><strong>Storage:</strong> <span id="storageTips"></span></p>
+
+        </div>
+
+        <div class="guide-card tips-card">
+
+            <h3>⭐ Pro Tips</h3>
+
+            <ul id="tipsList"></ul>
+
+        </div>
+
+    </div>
+
+</section>
+
+<div id="customPopup" class="custom-popup">
+
+    <div class="popup-box">
+
+        <div class="popup-icon">
+            <i id="popupIcon" class="fa-solid fa-circle-exclamation"></i>
+        </div>
+
+        <h3 id="popupTitle">Oops!</h3>
+
+        <p id="popupMessage"></p>
+
+        <button id="popupBtn">
+            OK
+        </button>
+
+    </div>
+
+</div>
+
+
+<div id="loadingOverlay">
+
+    <div class="loading-box">
+
+        <div class="loading-logo">
+            <i class="fa-solid fa-seedling"></i>
+        </div>
+
+        <h2>LeafNova AI</h2>
+
+        <p id="loadingText">
+            Analyzing Plant...
+        </p>
+
+        <div class="progress-bar">
+
+            <div id="progressFill"></div>
+
+        </div>
+
+        <span id="progressPercent">
+            0%
+        </span>
+
+    </div>
+
+</div>
+
+<script src="{{ url_for('static', filename='plantguide.js') }}"></script>
+
+</body>
+</html>

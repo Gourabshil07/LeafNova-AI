@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LeafNova AI</title>
+<link rel="stylesheet" href="/static/disease_detection.css">
+</head>
+<body>
+
+<header class="navbar">
+<div class="logo">🌿 LeafNova AI</div>
+<nav>
+<a href="/">Home</a>
+<a class="active" href="/disease_detection">Disease Detection</a>
+<a href="/plant-guide">Plant Guide</a>
+<a href="/weather">Weather</a>
+
+<a href="/about">About</a>
+</nav>
+</header>
+
+<section class="hero" id="upload">
+<div class="hero-content">
+<h1>AI Powered Plant Disease Detection</h1>
+<p>Detect plant diseases using TensorFlow and Gemini AI with multilingual voice support.</p>
+
+
+
+
+<form
+    id="uploadForm"
+    action="/upload/"
+    method="POST"
+    enctype="multipart/form-data"
+    class="upload-card">
+
+
+
+    <div class="upload-row">
+
+    <div class="custom-upload">
+
+        <input
+            type="file"
+            name="img"
+            id="img"
+            accept=".jpg,.jpeg,.png,image/jpeg,image/png"
+            required
+            hidden>
+
+        <label for="img" class="choose-btn">
+            📂 Choose Image
+        </label>
+
+        <span id="selectedFile">
+            No image selected
+        </span>
+
+    </div>
+
+    <button id="detectBtn" type="submit">
+        🔍 Detect Disease
+    </button>
+
+    </div>
+
+</form>
+
+</div>
+</section>
+
+{% if result %}
+<section class="result-card fade">
+
+<div class="image-panel">
+<img src="{{ imagepath }}" class="leaf">
+</div>
+
+<div class="info-panel">
+
+<h2>Prediction Result</h2>
+
+<div class="card">
+<h3>🌿 Disease</h3>
+<p id="diseaseName">{{ name }}</p>
+</div>
+
+<div class="card">
+<h3>⚠ Cause</h3>
+<p id="diseaseCause">{{ cause }}</p>
+</div>
+
+<div class="card">
+<h3>💊 Cure</h3>
+<p id="diseaseCure">{{ cure }}</p>
+</div>
+
+<div class="btn-group">
+<button id="bnBtn" onclick="askAI('bn')" type="button">🌱 Bengali</button>
+<button id="hiBtn" onclick="askAI('hi')" type="button">🌱 Hindi</button>
+</div>
+
+<div id="aiBox" class="ai-box" style="display:none;">
+<h3>🤖 AI Explanation</h3>
+<p id="aiText"></p>
+</div>
+
+<audio id="player" controls style="display:none;width:100%;margin-top:15px;"></audio>
+
+</div>
+
+</section>
+{% endif %}
+
+
+
+<!--LOADING SCREEN -->
+
+<div id="loadingScreen">
+
+    <div class="loading-card">
+
+        <div class="leaf-loader">
+            🌿
+        </div>
+
+        <div class="spinner"></div>
+
+        <h2>Analyzing Leaf</h2>
+
+        <p id="loadingText">
+            Uploading image...
+        </p>
+
+        <div class="progress">
+            <div class="progress-bar"></div>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- <footer>
+
+    <p>© 2026 LeafNova AI | AI-Powered Decision Support for Sustainable Agriculture</p>
+
+</footer> -->
+
+<footer>
+ <p>
+    AI-Powered Decision Support for Sustainable Agriculture
+ </p>
+</footer>
+
+<script src="/static/disease_detection.js"></script>
+</body>
+</html>

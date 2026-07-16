@@ -149,7 +149,10 @@
 <h3>Want to analyze another leaf?</h3>
 <p>Upload a new leaf image and get instant AI analysis.</p>
 </div>
-<a href="/#upload" class="btn">⬆ Upload New Leaf</a>
+<!-- <a href="/#upload" class="btn">⬆ Upload New Leaf</a> -->
+<a href="{{ url_for('disease_detection') }}#upload" class="btn">
+    ↑ Upload New Leaf
+</a>
 </section>
 
 </div>
