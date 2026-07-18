@@ -28,15 +28,58 @@ referrerpolicy="no-referrer" />
 <body>
 
 <header class="about_navbar">
-<div class="logo">🌿 LeafNova AI</div>
-<nav>
-<a href="/">Home</a>
-<a href="/disease_detection">Disease Detection</a>
-<a href="/plant-guide">Plant Guide</a>
-<a href="/weather">Weather</a>
-<a href="/about" class="active">About</a>
-</nav>
-</header>  
+
+    <div class="logo">
+        🌿 LeafNova AI
+    </div>
+
+    <!-- Desktop Navigation -->
+    <nav>
+        <a href="/">Home</a>
+        <a href="/disease_detection">Disease Detection</a>
+        <a href="/plant-guide">Plant Guide</a>
+        <a href="/weather">Weather</a>
+        <a class="active" href="/about">About</a>
+    </nav>
+
+    <!-- Hamburger -->
+    <button class="menu-btn" id="menuBtn">
+        <i class="fa-solid fa-bars"></i>
+    </button>
+
+</header>
+
+<!-- Mobile Menu -->
+
+<div class="mobile-menu" id="mobileMenu">
+
+    <button class="close-menu" id="closeMenu">
+        <i class="fa-solid fa-xmark"></i>
+    </button>
+
+    <div class="mobile-logo">
+        🌿 LeafNova <strong>AI</strong>
+    </div>
+
+    <a href="/">Home</a>
+
+    <a href="/disease_detection">
+        Disease Detection
+    </a>
+
+    <a href="/plant-guide">
+        Plant Guide
+    </a>
+
+    <a href="/weather">
+        Weather
+    </a>
+
+    <a href="/about">
+        About
+    </a>
+
+</div> 
    
 
 <div class="container">
@@ -395,6 +438,56 @@ wind and extreme weather.
 
 </section>
 
+<!--================ DEVELOPER =================-->
+
+<section class="glass developer">
+
+    <div class="developer-content">
+
+        <div class="developer-left">
+
+            <span class="about-tag">👨‍💻 Meet the Developer</span>
+
+            <h2>Gourab Shil</h2>
+
+            <h4>AI • Machine Learning • Full-Stack • AWS Cloud</h4>
+
+            <p>
+                Computer Science student passionate about AI,
+                Machine Learning, Full-Stack Development and AWS Cloud.
+            </p>
+            <div class="divider"></div>
+
+            <div class="social">
+
+                <a href="https://github.com/Gourabshil07"><i class="fa-brands fa-github"></i></a>
+
+                <a href="https://www.linkedin.com/in/gourab-shil-137004255/"><i class="fa-brands fa-linkedin"></i></a>
+
+                <a href="https://www.instagram.com/gourabshil07/"><i class="fa-brands fa-instagram"></i></a>
+
+                <a href="https://www.facebook.com/gourab.shil.728076"><i class="fa-brands fa-facebook"></i></a>
+
+            </div>
+
+            <a class="contact-btn" href="mailto:gourabshil07@gmail.com">
+
+                Contact Me →
+
+            </a>
+
+        </div>
+
+        <div class="developer-right">
+
+            <img src="{{ url_for('static', filename='images/Gourab_Shil.jpg') }}" alt="Developer">
+
+        </div>
+
+    </div>
+
+</section>
+
 
 <footer>
 
@@ -402,7 +495,7 @@ Made with ❤️ for Smart Farming
 
 </footer>
 
-<script src="/static/script.js"></script>
+<script src="/static/about.js"></script>
 </body>
 
 </html>
