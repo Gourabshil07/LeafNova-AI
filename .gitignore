@@ -5,10 +5,8 @@
 .env.*
 
 
-# TensorFlow Model
 
-models/
-*.keras
+
 
 
 # Uploaded Images
