@@ -37,15 +37,33 @@ gemini_model = genai.GenerativeModel("gemini-2.5-flash")
 from config import groq_client
 
 # model = tf.keras.models.load_model("models/plant_disease_prediction_model.keras")
-model = None
+# model = None
 
-def get_model():
-    global model
-    if model is None:
-        model = tf.keras.models.load_model(
-            "models/plant_disease_prediction_model.keras"
+# def get_model():
+#     global model
+#     if model is None:
+#         model = tf.keras.models.load_model(
+#             "models/plant_disease_prediction_model.keras"
+#         )
+#     return model
+
+interpreter = None
+input_details = None
+output_details = None
+
+def get_interpreter():
+    global interpreter, input_details, output_details
+
+    if interpreter is None:
+        interpreter = tf.lite.Interpreter(
+            model_path="models/plant_disease_prediction_model.tflite"
         )
-    return model
+        interpreter.allocate_tensors()
+
+        input_details = interpreter.get_input_details()
+        output_details = interpreter.get_output_details()
+
+    return interpreter, input_details, output_details
 
 
 # Load disease JSON
@@ -539,7 +557,17 @@ def model_predict(image):
     img = extract_features(image)
 
     # prediction = model.predict(img, verbose=0)
-    prediction = get_model().predict(img, verbose=0)
+    # prediction = get_model().predict(img, verbose=0)
+
+    interpreter, input_details, output_details = get_interpreter()
+
+    img = img.astype("float32")
+
+    interpreter.set_tensor(input_details[0]["index"], img)
+    interpreter.invoke()
+
+    prediction = interpreter.get_tensor(output_details[0]["index"])
+    
 
     confidence = float(np.max(prediction)) * 100
 
