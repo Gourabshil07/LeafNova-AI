@@ -36,7 +36,16 @@ gemini_model = genai.GenerativeModel("gemini-2.5-flash")
 
 from config import groq_client
 
-model = tf.keras.models.load_model("models/plant_disease_prediction_model.keras")
+# model = tf.keras.models.load_model("models/plant_disease_prediction_model.keras")
+model = None
+
+def get_model():
+    global model
+    if model is None:
+        model = tf.keras.models.load_model(
+            "models/plant_disease_prediction_model.keras"
+        )
+    return model
 
 
 # Load disease JSON
@@ -529,7 +538,8 @@ def model_predict(image):
 
     img = extract_features(image)
 
-    prediction = model.predict(img, verbose=0)
+    # prediction = model.predict(img, verbose=0)
+    prediction = get_model().predict(img, verbose=0)
 
     confidence = float(np.max(prediction)) * 100
 
