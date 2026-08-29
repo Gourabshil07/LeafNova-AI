@@ -1,4 +1,3 @@
-
 from flask import Flask, render_template, request, redirect, send_from_directory, jsonify
 import numpy as np
 import json
@@ -44,7 +43,7 @@ os.makedirs("uploadimages", exist_ok=True)
 
 genai.configure(api_key=GEMINI_API_KEY)
 
-gemini_model = genai.GenerativeModel("gemini-2.5-flash")
+gemini_model = genai.GenerativeModel("gemini-3.6-flash")
 
 from config import groq_client
 
