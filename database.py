@@ -6,9 +6,8 @@ from datetime import datetime, timezone, timedelta
 from supabase import create_client, Client
 
 
-# ==========================================
+
 # SUPABASE CONNECTION
-# ==========================================
 
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_KEY")
@@ -28,9 +27,8 @@ supabase: Client = create_client(
 )
 
 
-# ==========================================
+
 # PLANT GUIDE CACHE
-# ==========================================
 
 def get_plant_guide(plant, season):
 
@@ -70,9 +68,9 @@ def save_plant_guide(plant, season, guide):
 from datetime import datetime, timezone, timedelta
 
 
-# ==========================================
+
 # WEATHER CACHE
-# ==========================================
+
 
 def get_weather_cache(lat=None, lon=None, city=None, max_age_minutes=10):
 
