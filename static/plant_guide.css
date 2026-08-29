@@ -78,7 +78,7 @@ body::before{
     position:relative;
 } */
 
-.navbar{
+/* .navbar{
     width:min(1280px,92%);
     margin:25px auto;
     display:flex;
@@ -91,6 +91,28 @@ body::before{
     border:1px solid var(--border);
     box-shadow:var(--shadow);
     
+} */
+
+.navbar{
+    width:min(1280px,92%);
+    margin:0 auto;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:16px 28px;
+    border-radius:22px;
+    background:var(--glass);
+    backdrop-filter:blur(18px);
+    -webkit-backdrop-filter:blur(18px);
+    border:1px solid var(--border);
+    box-shadow:var(--shadow);
+
+    /* Fixed navbar */
+    position:fixed;
+    top:10px;
+    left:50%;
+    transform:translateX(-50%);
+    z-index:9999;
 }
 
 .logo{
@@ -151,7 +173,8 @@ nav a.active::after{
 .hero{
     width:min(1280px,92%);
    
-    margin:50px auto;
+    /* margin:50px auto; */
+    margin:120px auto 50px;
 }
 
 .hero-glass{

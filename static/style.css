@@ -39,7 +39,7 @@ body::before{
 }
 
 
-.navbar{
+/* .navbar{
     width:min(1280px,92%);
     margin:25px auto;
     display:flex;
@@ -52,6 +52,26 @@ body::before{
     border:1px solid var(--border);
     box-shadow:var(--shadow);
     
+} */
+
+.navbar{
+    width:min(1280px,92%);
+    position:fixed;
+    top:10px;
+    left:50%;
+    transform:translateX(-50%);
+    margin:0;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:16px 28px;
+    border-radius:22px;
+    background:var(--glass);
+    backdrop-filter:blur(18px);
+    -webkit-backdrop-filter:blur(18px);
+    border:1px solid var(--border);
+    box-shadow:var(--shadow);
+    z-index:1000;
 }
 
 .logo{
@@ -119,7 +139,8 @@ nav a.active::after{
 .hero{
     width:90%;
     min-height:calc(100vh - 140px);
-    margin:30px auto 0;
+    /* margin:30px auto 0; */
+    margin:110px auto 0;
 
     display:flex;
     justify-content:space-between;

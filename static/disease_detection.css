@@ -70,6 +70,21 @@ body{
 
 }
 
+.logo i{
+    color:#54ff97;
+    font-size:1.6rem;
+    flex-shrink:0;
+}
+
+.logo span{
+    display:inline-block;
+    white-space:nowrap;
+}
+
+.logo strong{
+    color:#54ff97;
+}
+
 
 
 .navbar nav{

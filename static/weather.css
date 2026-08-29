@@ -67,9 +67,9 @@ z-index:-1;
 }
 
 
-.navbar{
+/* .navbar{
 
-    width:92%;              /* Instead of max-width only */
+    width:92%;              
     max-width:1380px;
 
     margin:28px auto 40px;
@@ -94,6 +94,40 @@ z-index:-1;
         0 0 40px rgba(78,255,140,.08);
 
     transition:.35s ease;
+} */
+
+.navbar{
+    width:92%;
+    max-width:1380px;
+
+    position:fixed;
+    top:5px;
+    left:50%;
+    transform:translateX(-50%);
+
+    margin:0;
+
+    padding:16px 38px;
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+
+    background:rgba(255,255,255,.12);
+
+    backdrop-filter:blur(18px);
+    -webkit-backdrop-filter:blur(18px);
+
+    border:1px solid rgba(255,255,255,.18);
+    border-radius:26px;
+
+    box-shadow:
+        0 18px 45px rgba(0,0,0,.28),
+        0 0 40px rgba(78,255,140,.08);
+
+    transition:.35s ease;
+
+    z-index:9999;
 }
 
 /* Hover */
@@ -109,25 +143,55 @@ box-shadow:
 }
 
 
-.brand{
+/* .brand{
     display:flex;
     align-items:center;
     gap:15px;
-}
+} */
 
-.logo{
+/* .logo{
     font-size:34px;
+} */
+
+
+.navbar .logo{
+    display:flex !important;
+    flex-direction:row !important;
+    align-items:center !important;
+    justify-content:flex-start;
+    gap:12px;
+    width:max-content;
+    white-space:nowrap;
+    font-size:1.25rem;
+    font-weight:700;
 }
 
-.brand h2{
+.navbar .logo i{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    color:#54ff97;
+    font-size:1.6rem;
+    flex-shrink:0;
+}
+
+.navbar .logo span{
+    display:inline-block;
+    white-space:nowrap;
+}
+
+.navbar .logo strong{
+    color:#54ff97;
+}
+/* .brand h2{
     font-size:1.7rem;
     line-height:1.1;
-}
+} */
 
-.brand p{
+/* .brand p{
     margin-top:2px;
     font-size:0.95rem;
-}
+} */
 
 nav{
     display:flex;
@@ -153,6 +217,10 @@ nav a.active{
     color:#7effa8;
 }
 
+.menu-btn{
+    display:none;
+}
+
 .date-box{
 
     font-size:1.3rem;
@@ -167,7 +235,8 @@ nav a.active{
     width:90%;
     max-width:1350px;
 
-    margin:0 auto 45px;
+    /* margin:0 auto 45px; */
+    margin:120px auto 45px;
 
     display:flex;
 
@@ -1380,7 +1449,7 @@ footer p{
 
     .navbar{
         width:94%;
-        top:12px;
+        top:5px;
         padding:14px 18px;
 
         display:flex;
@@ -1415,7 +1484,11 @@ footer p{
         color:#fff;
     }
 
-    .logo{
+    .navbar .logo{
+        display:flex !important;
+        flex-direction:row !important;
+        align-items:center !important;
+        gap:12px;
         font-size:1.3rem;
         font-weight:700;
     }
@@ -1693,10 +1766,11 @@ footer p{
 
     }
 
-    .logo{
-
+    .navbar .logo{
+        display:flex !important;
+        flex-direction:row !important;
+        align-items:center !important;
         font-size:28px;
-
     }
 
     .brand h2{
