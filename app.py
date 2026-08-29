@@ -1,5 +1,4 @@
 
-from email.mime import image
 from flask import Flask, render_template, request, redirect, send_from_directory, jsonify
 import numpy as np
 import json
@@ -12,6 +11,7 @@ import traceback
 from ai.plant_guide import generate_plant_guide
 from plant_validator import validate_plant_name
 
+
 # from googletrans import Translator
 from gtts import gTTS
 
@@ -19,7 +19,19 @@ from gtts import gTTS
 import os
 from dotenv import load_dotenv
 
+# Load environment variables
 load_dotenv()
+
+# Supabase database
+
+from database import (
+    supabase,
+    get_plant_guide,
+    save_plant_guide,
+    get_weather_cache,
+    save_weather_cache
+)
+
 
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
@@ -196,7 +208,7 @@ Return exactly in this format:
 
     response = groq_client.chat.completions.create(
 
-        model="llama-3.3-70b-versatile",
+        model="openai/gpt-oss-20b",
 
         messages=[
             {
@@ -326,7 +338,7 @@ Format:
 
     response = groq_client.chat.completions.create(
 
-        model="llama-3.3-70b-versatile",
+        model="openai/gpt-oss-20b",
 
         messages=[
             {
@@ -429,13 +441,59 @@ def generate_guide():
     try:
 
         # First API
+        # validation = validate_plant_name(plant)
+
+        # if not validation["success"]:
+        #     return jsonify(validation)
+
+        # # Second API
+        # guide = generate_plant_guide(plant, season)
+
+        # return jsonify(guide)
+
         validation = validate_plant_name(plant)
 
         if not validation["success"]:
             return jsonify(validation)
 
-        # Second API
-        guide = generate_plant_guide(plant, season)
+
+        # Check PostgreSQL first
+        cached_guide = get_plant_guide(
+            plant,
+            season
+        )
+
+        if cached_guide:
+
+            print("Plant guide found in database.")
+
+            return jsonify(cached_guide)
+
+
+        # Generate new guide
+        print("Generating new plant guide...")
+
+        guide = generate_plant_guide(
+            plant,
+            season
+        )
+
+
+        # Save generated guide
+        try:
+
+            save_plant_guide(
+                plant,
+                season,
+                guide
+            )
+
+            print("Plant guide saved to database.")
+
+        except Exception as e:
+
+            print("Plant guide database error:", e)
+
 
         return jsonify(guide)
 
@@ -634,7 +692,7 @@ Requirements:
 """
 
         response = groq_client.chat.completions.create(
-            model="llama-3.3-70b-versatile",
+            model="openai/gpt-oss-20b",
             temperature=0.4,
             messages=[
                 {
@@ -694,7 +752,30 @@ def uploadimage():
         image.save(save_path)
 
         # Get prediction details
+        # name, cause, cure = model_predict(save_path)
+
+        # return render_template(
+        #     "result.html",
+        #     imagepath=f"/uploadimages/{filename}",
+        #     name=name,
+        #     cause=cause,
+        #     cure=cure
+        # )
+        # Get prediction details
         name, cause, cure = model_predict(save_path)
+
+        # Save prediction to Supabase PostgreSQL
+        try:
+            supabase.table("disease_detections").insert({
+                "disease_name": name,
+                "cause": cause,
+                "cure": cure
+            }).execute()
+
+            print("Disease detection saved to database.")
+
+        except Exception as e:
+            print("Database save error:", e)
 
         return render_template(
             "result.html",
@@ -703,7 +784,10 @@ def uploadimage():
             cause=cause,
             cure=cure
         )
+
     return redirect('/')
+
+
 
 
 
@@ -721,32 +805,96 @@ def weather_api():
     lat = request.args.get("lat")
     lon = request.args.get("lon")
 
-    if city:
+    try:
 
-        url = (
-            "https://api.openweathermap.org/data/2.5/weather"
-            f"?q={city}"
-            f"&appid={OPENWEATHER_API_KEY}"
-            "&units=metric"
+        # ==========================================
+        # 1. CHECK POSTGRESQL CACHE FIRST
+        # ==========================================
+
+        cached_weather = get_weather_cache(
+            lat=lat,
+            lon=lon,
+            city=city,
+            max_age_minutes=10
         )
 
-    else:
+        if cached_weather:
 
-        url = (
-            "https://api.openweathermap.org/data/2.5/weather"
-            f"?lat={lat}"
-            f"&lon={lon}"
-            f"&appid={OPENWEATHER_API_KEY}"
-            "&units=metric"
+            print("Returning weather from PostgreSQL.")
+
+            return jsonify(
+                cached_weather["weather_data"]
+            )
+
+
+        # ==========================================
+        # 2. NO CACHE → CALL OPENWEATHER
+        # ==========================================
+
+        if city:
+
+            url = (
+                "https://api.openweathermap.org/data/2.5/weather"
+                f"?q={city}"
+                f"&appid={OPENWEATHER_API_KEY}"
+                "&units=metric"
+            )
+
+        elif lat and lon:
+
+            url = (
+                "https://api.openweathermap.org/data/2.5/weather"
+                f"?lat={lat}"
+                f"&lon={lon}"
+                f"&appid={OPENWEATHER_API_KEY}"
+                "&units=metric"
+            )
+
+        else:
+
+            return jsonify({
+                "success": False,
+                "message": "City or coordinates are required."
+            }), 400
+
+
+        # ==========================================
+        # 3. GET FRESH WEATHER
+        # ==========================================
+
+        response = requests.get(
+            url,
+            timeout=10
         )
 
-    # return jsonify(requests.get(url).json())
-    response = requests.get(url)
+        weather_data = response.json()
 
-    print(response.status_code)
-    print(response.json())
 
-    return jsonify(response.json())
+        if response.status_code != 200:
+
+            return jsonify(weather_data), response.status_code
+
+
+        # ==========================================
+        # 4. SAVE WEATHER TO POSTGRESQL
+        # ==========================================
+
+        save_weather_cache(weather_data)
+
+
+        print("Fresh weather fetched from OpenWeather.")
+
+        return jsonify(weather_data)
+
+
+    except Exception as e:
+
+        print("Weather API error:", e)
+
+        return jsonify({
+            "success": False,
+            "message": str(e)
+        }), 500
 
 @app.route("/forecast_api")
 def forecast_api():
@@ -798,5 +946,32 @@ def result_weather():
 
     return jsonify(response.json())
 
+@app.route("/db_test")
+def db_test():
+    try:
+        response = (
+            supabase
+            .table("disease_detections")
+            .select("*")
+            .limit(1)
+            .execute()
+        )
+
+        return jsonify({
+            "success": True,
+            "message": "Supabase PostgreSQL connection successful",
+            "data": response.data
+        })
+
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
+
+
+# if __name__ == "__main__":
+#     app.run(debug=True)
 if __name__ == "__main__":
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
